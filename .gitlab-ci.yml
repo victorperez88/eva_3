@@ -1,0 +1,23 @@
+
+stages: [build, test, integration]
+image: maven:3.9-eclipse-temurin-17
+cache: { paths: [ .m2/repository ] }
+
+build:
+  stage: build
+  script: [ "mvn -B -DskipTests package" ]
+  artifacts: { paths: [ "target/*.jar" ] }
+
+unit_tests:
+  stage: test
+  script: [ "mvn -B -DskipITs test" ]
+  artifacts:
+    when: always
+    reports: { junit: "target/surefire-reports/*.xml" }
+
+integration_tests:
+  stage: integration
+  script: [ "mvn -B verify" ]
+  artifacts:
+    when: always
+    reports: { junit: "target/failsafe-reports/*.xml" }
